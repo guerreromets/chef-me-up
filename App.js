@@ -33,7 +33,7 @@
 // });
 
 import React from 'react';
-import { FlatList, ActivityIndicator, Text, View  } from 'react-native';
+import { FlatList, ActivityIndicator, Text, View, Linking  } from 'react-native';
 
 export default class FetchExample extends React.Component {
 
@@ -76,7 +76,7 @@ export default class FetchExample extends React.Component {
       <View style={{flex: 1, paddingTop:20}}>
         <FlatList
           data={this.state.dataSource}
-          renderItem={({item}) => <Text>{item.title + "\n"}, {item.href.replace(/\\/,"") + "\n"}</Text>}
+          renderItem={({item}) => <Text onPress={ ()=>  Linking.openURL(item.href.replace(/\\/,"")) }>{item.title + "\n"}</Text>}
           keyExtractor={(item, index) => index}
         />
       </View>
