@@ -1,6 +1,7 @@
 import React from 'react';
 import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image} from 'react-native';
 
+global.ingdntRcp = "";
 class FlatListItem extends React.Component{
 	render() {
 	   return (
@@ -39,7 +40,7 @@ class FlatListItem extends React.Component{
 	   );
 	}
 }
-export default class ChefMeUp extends React.Component {
+ class RecipeScreen extends React.Component {
 
   constructor(props){
     super(props);
@@ -50,7 +51,7 @@ export default class ChefMeUp extends React.Component {
   }
 
   componentDidMount(){
-    return fetch('http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3')
+    return fetch('http://www.recipepuppy.com/api/?i='+{ingdntRcp})
       .then((response) => response.json())
       .then((responseJson) => {
 
@@ -107,6 +108,58 @@ export default class ChefMeUp extends React.Component {
             </FlatList>
 	</View>
     );
+  }
+}
+
+class SearchScreen extends React.Component{
+	constructor(props) {
+		super(props);
+		this.state = { text: '' };
+	}
+
+	_handleTextChange = event => {
+    this.setState( {text: event.nativeEvent.text});
+    global.ingdntRcp = this.state.text;
+  }
+
+	render(){
+		return (
+			<View style = {styles.container}>
+				<Text style={styles.otherText}>Write ingredients, separate each with comma, no spaces:</Text>
+				<TextInput style={styles.nameInput} onSubmitEditing={this._handleTextChange; this.props.navigation.navigate('Recipe', {ingdntRcp: this.state.text})}/>
+				// <View style={styles.buttonContainer}>
+				// 	<Button onPress={() => this.props.navigation.navigate('Details', {name: this.state.text})} style={{borderWidth: 1, borderColor: 'red'}} title="Coordinates"/>
+				// </View>
+				// <View style={styles.buttonContainer}>
+				// 	<Button onPress={() => this.props.navigation.navigate('Weather', {name: this.state.text})} style={{borderWidth: 1, borderColor: 'red'}} title="Weather"/>
+				// </View>
+			   // <Text style={styles.title}>{name}</Text>
+		   </View>
+		 );
+	}
+
+}
+
+const RootStack = StackNavigator(
+  {
+    Recipe: {
+      screen: RecipeScreen,
+    },
+    Search: {
+      screen: SearchScreen,
+    },
+	Weather: {
+		screen: WeatherScreen,
+	},
+  },
+  {
+    initialRouteName: 'Search',
+  }
+);
+
+export default class App extends React.Component {
+  render() {
+    return <RootStack />;
   }
 }
 
