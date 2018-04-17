@@ -1,7 +1,8 @@
 import React from 'react';
-import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image} from 'react-native';
+import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image, TextInput, Button} from 'react-native';
+import { StackNavigator } from 'react-navigation';
 
-global.ingdntRcp = "";
+global.ingredients = "";
 class FlatListItem extends React.Component{
 	render() {
 	   return (
@@ -51,7 +52,7 @@ class FlatListItem extends React.Component{
   }
 
   componentDidMount(){
-    return fetch('http://www.recipepuppy.com/api/?i='+{ingdntRcp})
+    return fetch('http://www.recipepuppy.com/api/?i='+{ingredients})
       .then((response) => response.json())
       .then((responseJson) => {
 
@@ -94,6 +95,7 @@ class FlatListItem extends React.Component{
       //   />
       // </View>
 	  <View style={{flex: 1, marginTop: 22}}>
+	  	<Text>{ingredients}</Text>
             <FlatList
                 data={this.state.dataSource}
                 renderItem={({item, index})=>{
@@ -119,21 +121,21 @@ class SearchScreen extends React.Component{
 
 	_handleTextChange = event => {
     this.setState( {text: event.nativeEvent.text});
-    global.ingdntRcp = this.state.text;
+    global.ingredients = this.state.text;
+  }
+
+  sendData(){
+	  this._handleTextChange;
+	  console.log("THIS IS A TEST");
+	  this.props.navigation.navigate('Recipe', {ingredients: this.state.text});
+
   }
 
 	render(){
 		return (
 			<View style = {styles.container}>
 				<Text style={styles.otherText}>Write ingredients, separate each with comma, no spaces:</Text>
-				<TextInput style={styles.nameInput} onSubmitEditing={this._handleTextChange; this.props.navigation.navigate('Recipe', {ingdntRcp: this.state.text})}/>
-				// <View style={styles.buttonContainer}>
-				// 	<Button onPress={() => this.props.navigation.navigate('Details', {name: this.state.text})} style={{borderWidth: 1, borderColor: 'red'}} title="Coordinates"/>
-				// </View>
-				// <View style={styles.buttonContainer}>
-				// 	<Button onPress={() => this.props.navigation.navigate('Weather', {name: this.state.text})} style={{borderWidth: 1, borderColor: 'red'}} title="Weather"/>
-				// </View>
-			   // <Text style={styles.title}>{name}</Text>
+				<TextInput style={styles.nameInput} onSubmitEditing={this.sendData.bind(this)}/>
 		   </View>
 		 );
 	}
@@ -148,10 +150,7 @@ const RootStack = StackNavigator(
     Search: {
       screen: SearchScreen,
     },
-	Weather: {
-		screen: WeatherScreen,
-	},
-  },
+},
   {
     initialRouteName: 'Search',
   }
