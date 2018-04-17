@@ -25,7 +25,7 @@ class FlatListItem extends React.Component{
 						   flexDirection:'column',
 						   height: 100
 					   }}>
-						   <Text style={styles.flatListItem}>{this.props.item.title}</Text>
+						   <Text style={styles.flatListItem} onPress={() => Linking.openURL(this.props.item.href.replace(/\\/,""))}>{this.props.item.title}</Text>
 						   <Text style={styles.TextStyle}>{this.props.item.ingredients}</Text>
 				   </View>
 			   </View>
