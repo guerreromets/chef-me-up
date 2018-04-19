@@ -3,6 +3,10 @@ import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, 
 import { StackNavigator } from 'react-navigation';
 
 global.ingredients = "";
+global.food = "";
+var foodArray;
+var recipeURL = "http://www.recipepuppy.com/api/?i=";
+
 class FlatListItem extends React.Component{
 	render() {
 	   return (
@@ -14,7 +18,7 @@ class FlatListItem extends React.Component{
 					   flex: 1,
 					   flexDirection:'row',
 					   // backgroundColor: this.props.index % 2 == 0 ? 'mediumseagreen': 'tomato'
-					   backgroundColor: 'mediumseagreen'
+					   backgroundColor: '#3BC2F3'
 			   }}>
 				   <Image
 					   source={{uri: this.props.item.thumbnail}}
@@ -52,7 +56,8 @@ class FlatListItem extends React.Component{
   }
 
   componentDidMount(){
-    return fetch('http://www.recipepuppy.com/api/?i='+{ingredients})
+	console.log({food});
+    return fetch(recipeURL)
       .then((response) => response.json())
       .then((responseJson) => {
 
@@ -119,23 +124,29 @@ class SearchScreen extends React.Component{
 		this.state = { text: '' };
 	}
 
-	_handleTextChange = event => {
-    this.setState( {text: event.nativeEvent.text});
-    global.ingredients = this.state.text;
-  }
+	// _handleTextChange = event => {
+  //   this.setState( {food: event.nativeEvent.food}).bind(this);
+  //   global.ingredients = this.state.food;
+  // }
 
-  sendData(){
-	  this._handleTextChange;
-	  console.log("THIS IS A TEST");
-	  this.props.navigation.navigate('Recipe', {ingredients: this.state.text});
-
+  sendData = (data)=>{
+	  // this._handleTextChange.bind(this);
+	  this.setState({text:data}, function(){
+		  foodArray = data.split(',');
+		  var i;
+		  	for(i = 0; i < foodArray.length; i++){
+				recipeURL+= foodArray[i];
+			}
+          global.food = this.state.text;
+    	  this.props.navigation.navigate('Recipe', {food: this.state.text});
+	  });
   }
 
 	render(){
 		return (
 			<View style = {styles.container}>
 				<Text style={styles.otherText}>Write ingredients, separate each with comma, no spaces:</Text>
-				<TextInput style={styles.nameInput} onSubmitEditing={this.sendData.bind(this)}/>
+				<TextInput style={styles.nameInput} onSubmitEditing={(event) => this.sendData(event.nativeEvent.text)}/>
 		   </View>
 		 );
 	}
@@ -173,7 +184,8 @@ const styles = StyleSheet.create({
   TextStyle: {
 
 	color: '#E91E63',
-	textDecorationLine: 'underline'
+	textDecorationLine: 'underline',
+	fontSize: 20,
 
 },
   flatListItem: {
