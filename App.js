@@ -1,7 +1,8 @@
 import React from 'react';
-import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image, TextInput, Button} from 'react-native';
+import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image, TextInput, Button, BackHandler} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
+console.disableYellowBox = true;
 global.ingredients = "";
 global.food = "";
 var foodArray;
@@ -73,6 +74,9 @@ class FlatListItem extends React.Component{
         console.error(error);
       });
   }
+  // BackHandler.addEventListener('hardwareBackPress', function() {
+	//   console.log("TEST");
+  // });
 
   render(){
 
@@ -135,7 +139,7 @@ class SearchScreen extends React.Component{
 		  foodArray = data.split(',');
 		  var i;
 		  	for(i = 0; i < foodArray.length; i++){
-				recipeURL+= foodArray[i];
+				recipeURL+= (foodArray[i]+",");
 			}
           global.food = this.state.text;
     	  this.props.navigation.navigate('Recipe', {food: this.state.text});
@@ -184,12 +188,12 @@ const styles = StyleSheet.create({
   TextStyle: {
 
 	color: '#E91E63',
-	textDecorationLine: 'underline',
 	fontSize: 20,
 
 },
   flatListItem: {
         color: 'white',
+		textDecorationLine: 'underline',
         padding: 10,
         fontSize: 16,
 }
