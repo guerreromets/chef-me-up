@@ -1,6 +1,9 @@
 import React from 'react';
-import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image, TextInput, Button, BackHandler, TouchableHighlight} from 'react-native';
+import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image, TextInput, Button, BackHandler} from 'react-native';
 import { StackNavigator } from 'react-navigation';
+import firebase from 'firebase';
+import { Input } from './components/Input';
+import { Button } from './components/Button';
 
 console.disableYellowBox = true;
 global.ingredients = "";
@@ -46,6 +49,106 @@ class FlatListItem extends React.Component{
 	   );
 	}
 }
+
+class LoginScreen extends React.Component{
+	state = {
+    email: '',
+    password: '',
+    authenticating: false,
+    user: null,
+    error: '',
+	}
+	onPressSignIn() {
+    this.setState({
+      authenticating: true,
+    });
+	
+	const { email, password } = this.state;
+	
+	firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(user => this.setState({
+        authenticating: false,
+        user,
+        error: '',
+      }))
+      .catch(() => {
+        // Login was not successful
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+          .then(user => this.setState({
+            authenticating: false,
+            user,
+            error: '',
+          }))
+          .catch(() => this.setState({
+            authenticating: false,
+            user: null,
+            error: 'Authentication Failure',
+          }))
+      })
+	}
+	
+	onPressLogOut() {
+    firebase.auth().signOut()
+      .then(() => {
+        this.setState({
+          email: '',
+          password: '',
+          authenticating: false,
+          user: null,
+        })
+      }, error => {
+        console.error('Sign Out Error', error);
+      });
+	}
+	  renderCurrentState() {
+    if (this.state.authenticating) {
+      return (
+        <View style={styles.form}>
+          <ActivityIndicator size='large' />
+        </View>
+      )
+    }
+
+    if (this.state.user !== null) {
+      return (
+        <View style={styles.form}>
+          <Text>Logged In</Text>
+          <Button onPress={() => this.onPressLogOut()}>Log Out</Button>
+        </View>
+      )
+    }
+
+    return (
+      <View style={styles.form}>
+        <Input
+          placeholder='Enter your email...'
+          label='Email'
+          onChangeText={email => this.setState({ email })}
+          value={this.state.email}
+        />
+        <Input
+          placeholder='Enter your password...'
+          label='Password'
+          secureTextEntry
+          onChangeText={password => this.setState({ password })}
+          value={this.state.password}
+        />
+        <Button onPress={() => this.onPressSignIn()}>Log In</Button>
+        <Text>{this.state.error}</Text>
+      </View>
+    )
+
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        {this.renderCurrentState()}
+      </View>
+    );
+  }
+}
+
  class RecipeScreen extends React.Component {
 
   constructor(props){
@@ -157,21 +260,6 @@ class SearchScreen extends React.Component{
 
 }
 
-class BrowserScreen extends React.Component{
-	constructor(props) {
-		super(props);
-		this.state = { url: '' };
-	}
-	render() {
-    return (
-      <WebView
-        source={{uri: 'https://github.com/facebook/react-native'}}
-        style={{marginTop: 20}}
-      />
-    );
-  }
-}
-
 const RootStack = StackNavigator(
   {
     Recipe: {
@@ -180,16 +268,27 @@ const RootStack = StackNavigator(
     Search: {
       screen: SearchScreen,
     },
-	Browser: {
-	  screen: BrowserScreen,	
+	Login: {
+		screen: LoginScreen,
 	},
 },
   {
-    initialRouteName: 'Search',
+    initialRouteName: 'Login',
   }
 );
 
 export default class App extends React.Component {
+  
+  var config = {
+    apiKey: "AIzaSyD5e9uuw6-6UqxYKS3Gf6IMxjkYQsGim9Y",
+    authDomain: "chef-me-up.firebaseapp.com",
+    databaseURL: "https://chef-me-up.firebaseio.com",
+    projectId: "chef-me-up",
+    storageBucket: "chef-me-up.appspot.com",
+    messagingSenderId: "356573297289"
+  };
+
+	
   render() {
     return <RootStack />;
   }
@@ -214,5 +313,15 @@ const styles = StyleSheet.create({
 		textDecorationLine: 'underline',
         padding: 10,
         fontSize: 16,
-}
+},
+container: {
+    flex: 1,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row'
+  },
+  form: {
+    flex: 1
+  }
 });
