@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image, TextInput, Button, BackHandler} from 'react-native';
+import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image, TextInput, Button, BackHandler, TouchableHighlight} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
 console.disableYellowBox = true;
@@ -157,6 +157,21 @@ class SearchScreen extends React.Component{
 
 }
 
+class BrowserScreen extends React.Component{
+	constructor(props) {
+		super(props);
+		this.state = { url: '' };
+	}
+	render() {
+    return (
+      <WebView
+        source={{uri: 'https://github.com/facebook/react-native'}}
+        style={{marginTop: 20}}
+      />
+    );
+  }
+}
+
 const RootStack = StackNavigator(
   {
     Recipe: {
@@ -165,6 +180,9 @@ const RootStack = StackNavigator(
     Search: {
       screen: SearchScreen,
     },
+	Browser: {
+	  screen: BrowserScreen,	
+	},
 },
   {
     initialRouteName: 'Search',
