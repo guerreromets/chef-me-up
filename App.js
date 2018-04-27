@@ -112,10 +112,11 @@ class LoginScreen extends React.Component{
 
     if (this.state.user !== null) {
       return (
-        <View style={styles.form}>
-          <Text>Logged In</Text>
-          <Button onPress={() => this.onPressLogOut()}>Log Out</Button>
-        </View>
+		this.props.navigation.navigate('Search', {user: this.state.email})
+       // <View style={styles.form}>
+       //   <Text>Logged In</Text>
+       //   <Button onPress={() => this.onPressLogOut()}>Log Out</Button>
+       // </View>
       )
     }
 
@@ -143,7 +144,7 @@ class LoginScreen extends React.Component{
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={styles.container1}>
         {this.renderCurrentState()}
       </View>
     );
@@ -236,6 +237,21 @@ class SearchScreen extends React.Component{
   //   this.setState( {food: event.nativeEvent.food}).bind(this);
   //   global.ingredients = this.state.food;
   // }
+  
+  onPressLogOut() {
+    firebase.auth().signOut()
+      .then(() => {
+        this.setState({
+          email: '',
+          password: '',
+          authenticating: false,
+          user: null,
+        })
+		this.props.navigation.navigate('Login')
+      }, error => {
+        console.error('Sign Out Error', error);
+      });
+	}
 
   sendData = (data)=>{
 	  // this._handleTextChange.bind(this);
@@ -255,6 +271,7 @@ class SearchScreen extends React.Component{
 			<View style = {styles.container}>
 				<Text style={styles.otherText}>Write ingredients, separate each with comma, no spaces:</Text>
 				<TextInput style={styles.nameInput} onSubmitEditing={(event) => this.sendData(event.nativeEvent.text)}/>
+				<Button onPress={() => this.onPressLogOut()}>Log Out</Button>
 		   </View>
 		 );
 	}
@@ -317,7 +334,7 @@ const styles = StyleSheet.create({
         padding: 10,
         fontSize: 16,
 },
-container: {
+container1: {
     flex: 1,
     padding: 20,
     alignItems: 'center',
