@@ -1,9 +1,10 @@
 import React from 'react';
-import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image, TextInput, Button, BackHandler} from 'react-native';
+import { FlatList, ActivityIndicator, Text, View, Linking, StyleSheet, WebView, Image, TextInput, BackHandler} from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import firebase from 'firebase';
+import * as firebase from 'firebase';
 import { Input } from './components/Input';
 import { Button } from './components/Button';
+
 
 console.disableYellowBox = true;
 global.ingredients = "";
@@ -279,16 +280,18 @@ const RootStack = StackNavigator(
 
 export default class App extends React.Component {
   
-  var config = {
-    apiKey: "AIzaSyD5e9uuw6-6UqxYKS3Gf6IMxjkYQsGim9Y",
-    authDomain: "chef-me-up.firebaseapp.com",
-    databaseURL: "https://chef-me-up.firebaseio.com",
-    projectId: "chef-me-up",
-    storageBucket: "chef-me-up.appspot.com",
-    messagingSenderId: "356573297289"
+  componentWillMount(){
+	var config = {
+		apiKey: "AIzaSyD5e9uuw6-6UqxYKS3Gf6IMxjkYQsGim9Y",
+		authDomain: "chef-me-up.firebaseapp.com",
+		databaseURL: "https://chef-me-up.firebaseio.com",
+		projectId: "chef-me-up",
+		storageBucket: "chef-me-up.appspot.com",
+		messagingSenderId: "356573297289"
   };
+  firebase.initializeApp(config);
+  }
 
-	
   render() {
     return <RootStack />;
   }
