@@ -52,13 +52,18 @@ class FlatListItem extends React.Component{
 }
 
 class LoginScreen extends React.Component{
-	state = {
-    email: '',
-    password: '',
-    authenticating: false,
-    user: null,
-    error: '',
+	constructor(props){
+    super(props)
+	
+	this.state = {
+		username: '',
+		email: '',
+		password: '',
+		authenticating: false,
+		user: null,
+		error: '',
 	}
+  }
 	onPressSignIn() {
     this.setState({
       authenticating: true,
@@ -112,7 +117,7 @@ class LoginScreen extends React.Component{
 
     if (this.state.user !== null) {
       return (
-		this.props.navigation.navigate('Search', {user: this.state.email})
+		this.props.navigation.navigate('Search', {username: this.state.email})
        // <View style={styles.form}>
        //   <Text>Logged In</Text>
        //   <Button onPress={() => this.onPressLogOut()}>Log Out</Button>
@@ -230,7 +235,10 @@ class LoginScreen extends React.Component{
 class SearchScreen extends React.Component{
 	constructor(props) {
 		super(props);
-		this.state = { text: '' };
+		this.state = { 
+			text: '',
+			username: this.props.navigation.state.params.username
+		};
 	}
 
 	// _handleTextChange = event => {
@@ -264,6 +272,13 @@ class SearchScreen extends React.Component{
           global.food = this.state.text;
     	  this.props.navigation.navigate('Recipe', {food: this.state.text});
 	  });
+	  userarray = this.state.username.split('@');
+	  firebase.database().ref('users/' + userarray[0]).set(
+		{
+			pantry: data
+		}
+	  )
+	  
   }
 
 	render(){
@@ -271,6 +286,7 @@ class SearchScreen extends React.Component{
 			<View style = {styles.container}>
 				<Text style={styles.otherText}>Write ingredients, separate each with comma, no spaces:</Text>
 				<TextInput style={styles.nameInput} onSubmitEditing={(event) => this.sendData(event.nativeEvent.text)}/>
+				<Text>{this.state.username}</Text>
 				<Button onPress={() => this.onPressLogOut()}>Log Out</Button>
 		   </View>
 		 );
