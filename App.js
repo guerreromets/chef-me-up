@@ -286,7 +286,6 @@ class SearchScreen extends React.Component{
 			<View style = {styles.container}>
 				<Text style={styles.otherText}>Write ingredients, separate each with comma, no spaces:</Text>
 				<TextInput style={styles.nameInput} onSubmitEditing={(event) => this.sendData(event.nativeEvent.text)}/>
-				<Text>{this.state.username}</Text>
 				<Button onPress={() => this.onPressLogOut()}>Log Out</Button>
 		   </View>
 		 );
